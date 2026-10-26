@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Behaviour Insights | User Behaviour Modelling Analytics Dashboard</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <!-- App Navigation / Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand-wrapper">
+                <div class="brand-logo-icon">μ</div>
+                <div class="brand-text">
+                    <h1>Behaviour Insights</h1>
+                </div>
+                <span class="badge-sub">B.Tech Micro Project 04</span>
+            </div>
+            <div class="header-meta">
+                <div class="engine-pill">
+                    <span class="status-dot"></span>
+                    <span>Statistical Engine: NumPy + SciPy</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Container -->
+    <main class="main-layout">
+        <!-- Hero Section -->
+        <section class="hero-card">
+            <div class="hero-info">
+                <h2>User Behaviour Analytics Dashboard</h2>
+                <p>
+                    Modelling user activity distributions with continuous <strong>Normal Probability Density Functions (PDF)</strong> 
+                    and discrete <strong>Poisson Probability Mass Functions (PMF)</strong> to uncover engagement patterns and deliver heuristic recommendations.
+                </p>
+            </div>
+            <div class="hero-platform-tag">
+                <span class="platform-tag-icon" id="hero-platform-icon">🎬</span>
+                <div>
+                    <div class="platform-tag-name" id="hero-platform-name">Netflix</div>
+                    <div class="platform-tag-math" id="hero-platform-math">X ~ Normal(μ, σ²)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Platform Selection Cards -->
+        <section class="platform-switch-grid">
+            <button class="btn-platform active" data-platform="Netflix" type="button">
+                <div class="plat-icon" style="color: #f43f5e;">🎬</div>
+                <div class="plat-details">
+                    <h3>Netflix</h3>
+                    <p>Watch time (Continuous)</p>
+                    <span class="plat-type-badge badge-continuous">Normal PDF</span>
+                </div>
+            </button>
+            <button class="btn-platform" data-platform="Spotify" type="button">
+                <div class="plat-icon" style="color: #10b981;">🎧</div>
+                <div class="plat-details">
+                    <h3>Spotify</h3>
+                    <p>Listening time (Continuous)</p>
+                    <span class="plat-type-badge badge-continuous">Normal PDF</span>
+                </div>
+            </button>
+            <button class="btn-platform" data-platform="Amazon" type="button">
+                <div class="plat-icon" style="color: #f59e0b;">📦</div>
+                <div class="plat-details">
+                    <h3>Amazon</h3>
+                    <p>Product clicks (Discrete)</p>
+                    <span class="plat-type-badge badge-discrete">Poisson PMF</span>
+                </div>
+            </button>
+        </section>
+
+        <!-- Two-Column Workspace: Controls & Analytics -->
+        <div class="dashboard-grid">
+            <!-- Left Column: Controls & Configuration -->
+            <aside class="config-card">
+                <div class="card-title-row">
+                    <h3><span>⚙️</span> Dataset Configuration</h3>
+                    <span class="unit-tag" id="unit-tag">minutes/day</span>
+                </div>
+
+                <!-- Data Source Tabs -->
+                <div class="data-mode-tabs">
+                    <button class="tab-btn active" data-mode="preset" type="button">Preset Data</button>
+                    <button class="tab-btn" data-mode="manual" type="button">Manual Entry</button>
+                    <button class="tab-btn" data-mode="synthetic" type="button">Random Sample</button>
+                </div>
+
+                <!-- Preset Chips (Visible for Preset mode) -->
+                <div class="presets-section" id="presets-section">
+                    <span class="presets-label">Select Activity Scenario:</span>
+                    <div class="preset-chip-group">
+                        <button class="chip-btn active" data-preset="balanced" type="button">⚖️ Balanced</button>
+                        <button class="chip-btn" data-preset="low" type="button">📉 Low Activity</button>
+                        <button class="chip-btn" data-preset="high" type="button">🚀 High Activity</button>
+                        <button class="chip-btn" data-preset="zero_var" type="button">🎯 Zero-Variance</button>
+                    </div>
+                </div>
+
+                <!-- Manual/Preset Data Textarea -->
+                <div class="input-group" id="manual-input-section">
+                    <div class="input-header">
+                        <span>Observed Activity Values:</span>
+                        <span class="obs-counter" id="obs-counter">15 items</span>
+                    </div>
+                    <textarea class="activity-textarea" id="activity-textarea" spellcheck="false"></textarea>
+                    <span class="input-hint">Delimited by commas, spaces, or line breaks (non-negative numbers only).</span>
+                </div>
+
+                <!-- Threshold Slider & Input Box -->
+                <div class="threshold-box">
+                    <div class="threshold-header">
+                        <label for="threshold-slider">Target Threshold (t):</label>
+                        <span class="threshold-val-badge" id="threshold-val-badge">150 minutes/day</span>
+                    </div>
+                    <input type="range" class="range-slider" id="threshold-slider" min="0" max="350" step="5" value="150" />
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+                        <span>Exact Threshold Input:</span>
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <input type="number" id="threshold-input" style="width: 70px; background: var(--bg-input); border: 1px solid var(--border-color); color: #fff; padding: 0.2rem 0.4rem; border-radius: 4px; text-align: right;" value="150" />
+                            <span id="unit-suffix">minutes/day</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Display -->
+                <div class="alert-error" id="alert-error">
+                    <span>⚠️</span>
+                    <span id="error-message">Invalid input entered.</span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn-primary" id="btn-analyze" type="button">
+                        <span>⚡</span> Analyse Behaviour
+                    </button>
+                    <button class="btn-secondary" id="btn-reset" type="button">
+                        ↺ Reset
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Right Column: Visualisation & Analytics -->
+            <section class="content-area">
+                <!-- KPI Metric Cards Grid -->
+                <div class="metrics-grid">
+                    <!-- Metric 1: Sample Size -->
+                    <div class="metric-card">
+                        <div class="metric-title">
+                            <span>Sample Size</span>
+                            <span>👥</span>
+                        </div>
+                        <div class="metric-value" id="metric-obs">15</div>
+                        <div class="metric-meta" id="metric-obs-source">Preset: Balanced</div>
+                    </div>
+
+                    <!-- Metric 2: Mean / Expected Value -->
+                    <div class="metric-card">
+                        <div class="metric-title">
+                            <span>Expected Activity E[X]</span>
+                            <span>μ</span>
+                        </div>
+                        <div class="metric-value" id="metric-mean">124.5</div>
+                        <div class="metric-meta" id="metric-mean-param">Mean (μ) [minutes/day]</div>
+                    </div>
+
+                    <!-- Metric 3: Dispersion -->
+                    <div class="metric-card">
+                        <div class="metric-title">
+                            <span>Dispersion & Spread</span>
+                            <span>σ</span>
+                        </div>
+                        <div class="metric-value" id="metric-std">σ = 14.82</div>
+                        <div class="metric-meta" id="metric-variance">Var σ² = 219.64</div>
+                    </div>
+
+                    <!-- Metric 4: Exceedance Probability -->
+                    <div class="metric-card">
+                        <div class="metric-title">
+                            <span>P(Activity ≥ t)</span>
+                            <span>📊</span>
+                        </div>
+                        <div class="metric-value" id="metric-prob-emp">13.3%</div>
+                        <div class="prob-split" id="metric-prob-model">Model 10.2% vs Empirical 13.3%</div>
+                    </div>
+
+                    <!-- Metric 5: Engagement Tier -->
+                    <div class="metric-card">
+                        <div class="metric-title">
+                            <span>Engagement Tier</span>
+                            <span>⭐</span>
+                        </div>
+                        <div style="margin: 0.35rem 0;">
+                            <span class="tier-badge tier-moderate" id="metric-tier-badge">Moderate</span>
+                        </div>
+                        <div class="metric-meta" id="metric-score-text">Engagement Score: 68/100</div>
+                    </div>
+                </div>
+
+                <!-- Main Analytics Chart Card -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <h3 id="chart-title">Observed Activity & Probability Model</h3>
+                            <p id="chart-subtitle">Continuous Random Variable X. Bar: Observed Frequency. Line: Fitted Normal Density.</p>
+                        </div>
+                        <div class="chart-legend-pills">
+                            <div class="legend-pill">
+                                <span class="legend-dot dot-obs"></span>
+                                <span>Observed Frequency</span>
+                            </div>
+                            <div class="legend-pill">
+                                <span class="legend-dot dot-model"></span>
+                                <span id="chart-legend-model">Theoretical Curve</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container-box">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Statistical Insights Section -->
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <h4><span>🎯</span> Central Tendency & Expected Value</h4>
+                        <p id="insight-mean">The sample mean estimates the expected daily activity of a random user across the population.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4><span>📐</span> Variance & Behavioral Spread</h4>
+                        <p id="insight-variance">Measures how individual viewing habits deviate from average community consumption.</p>
+                    </div>
+                    <div class="insight-card">
+                        <h4><span>⚖️</span> Probability & Threshold Analysis</h4>
+                        <p id="insight-probability">Evaluates the likelihood of a user reaching or exceeding your target engagement benchmark.</p>
+                    </div>
+                </div>
+
+                <!-- Actionable Recommendations Card -->
+                <div class="recommendations-card">
+                    <div class="rec-header">
+                        <h3><span>💡</span> Platform Engagement Recommendations</h3>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <span class="rec-disclaimer" id="rec-tier-label">Tier: Moderate</span>
+                            <span class="rec-disclaimer">Rule-Based Heuristic Prototype</span>
+                        </div>
+                    </div>
+                    <ul class="rec-list" id="recommendations-list">
+                        <!-- Populated by JavaScript -->
+                    </ul>
+                </div>
+
+                <!-- Academic Viva / Theoretical Reference -->
+                <details class="academic-card">
+                    <summary>
+                        <span>📖 Mathematical Formulations & Viva Reference Sheet (Click to Expand)</span>
+                    </summary>
+                    <div class="math-grid">
+                        <div class="math-box">
+                            <h5>1. Continuous Random Variable (Netflix & Spotify)</h5>
+                            <span class="math-formula">f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}</span>
+                            <p>Watch and listening durations are modeled as continuous real numbers X ∈ [0, ∞). The normal probability density function (PDF) models user clustering around the mean.</p>
+                        </div>
+                        <div class="math-box">
+                            <h5>2. Discrete Random Variable (Amazon)</h5>
+                            <span class="math-formula">P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}</span>
+                            <p>Click events represent discrete non-negative integer counts k ∈ {0, 1, 2, ...}. The Poisson distribution parameter λ is estimated directly by the sample mean.</p>
+                        </div>
+                        <div class="math-box">
+                            <h5>3. Expected Value & Sample Variance</h5>
+                            <span class="math-formula">E[X] ≈ \bar{x} = \frac{1}{n}\sum x_i, \quad s^2 = \frac{1}{n-1}\sum (x_i - \bar{x})^2</span>
+                            <p>The sample mean \(\bar{x}\) provides an unbiased estimator for E[X]. Bessel's correction (n-1) provides an unbiased sample variance estimator.</p>
+                        </div>
+                        <div class="math-box">
+                            <h5>4. Empirical vs Model-Based Probability</h5>
+                            <span class="math-formula">P_{emp}(X \geq t) = \frac{\sum [x_i \geq t]}{n}, \quad P_{norm}(X \geq t) = 1 - \Phi\left(\frac{t-\mu}{\sigma}\right)</span>
+                            <p>Comparing empirical observations against parametric distributions allows validating whether the theoretical model reliably approximates user behaviour.</p>
+                        </div>
+                    </div>
+                </details>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <div>
+                <strong>Behaviour Insights</strong> • User Behaviour Analytics Micro Project 04. Educational simulation prototype.
+            </div>
+            <div class="tech-tags">
+                <span class="tech-tag">Python 3.11</span>
+                <span class="tech-tag">Flask</span>
+                <span class="tech-tag">NumPy</span>
+                <span class="tech-tag">SciPy Stats</span>
+                <span class="tech-tag">Chart.js</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main Dashboard Controller -->
+    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>
